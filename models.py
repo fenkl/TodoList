@@ -1,7 +1,14 @@
+# Autor: Francisco Fenkl
+# Grundätzliche Funktion:
+# Datum 1. Version: 26.04.2023
+
 from database import db
 
 
 class TodoList(db.Model):
+    """
+    Speicherung und Verwaltung aller To-do-Listen
+    """
     id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String)
 
@@ -13,6 +20,9 @@ class TodoList(db.Model):
 
 
 class TodoEntry(db.Model):
+    """
+    Speicherung und Verwaltung aller To-do-Listeneinträge mit dem Verweis auf ihre To-do-Liste
+    """
     id = db.Column(db.String, primary_key=True)
     name = db.Column(db.String)
     beschreibung = db.Column(db.String)

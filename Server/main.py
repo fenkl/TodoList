@@ -93,7 +93,11 @@ def add_entry(list_id):
     if todo_list is None:
         abort(404, "Todoliste nicht gefunden")
     data = request.get_json()
-    new_entry = TodoEntry(id=data['id'], name=data['name'], beschreibung=data['beschreibung'], list_id=list_id)
+    try:
+        new_entry = TodoEntry(id=str(uuid.uuid4()), name=data['name'], beschreibung=data['beschreibung'], list_id=list_id)
+    except Exception as e:
+        abort(404, f"Fehler bei Anlegen: {e}")
+        return
     db.session.add(new_entry)
     db.session.commit()
     return jsonify(new_entry.as_dict()), 200

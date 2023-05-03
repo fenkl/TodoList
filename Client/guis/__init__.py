@@ -9,6 +9,32 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 
+class ErstelleTodoListe(QDialog):
+    def __init__(self, parent=None):
+        super(ErstelleTodoListe, self).__init__(parent)
+        self.setWindowTitle("Neue Liste erstellen")
+
+        self.setup_ui()
+
+    def setup_ui(self):
+        layout = QVBoxLayout()
+
+        self.name_label = QLabel("Name der Liste:")
+        self.name_input = QLineEdit()
+
+        self.create_button = QPushButton("Erstellen")
+        self.create_button.clicked.connect(self.accept)
+        self.cancel_button = QPushButton("Abbrechen")
+        self.cancel_button.clicked.connect(self.reject)
+
+        layout.addWidget(self.name_label)
+        layout.addWidget(self.name_input)
+        layout.addWidget(self.create_button)
+        layout.addWidget(self.cancel_button)
+
+        self.setLayout(layout)
+
+
 class ChooseParameters_gui(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -41,13 +67,27 @@ class ChooseParameters_gui(QMainWindow):
 
         # TableView erstellen
         self.tableView = QTableView()
-        self.model = QStandardItemModel(0, 2, self)
+        self.model = QStandardItemModel(0, 3, self)  # Spaltenanzahl auf 3 erhöhen
         self.model.setHeaderData(0, Qt.Horizontal, "Name")
         self.model.setHeaderData(1, Qt.Horizontal, "Beschreibung")
         self.tableView.setModel(self.model)
-
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableView.setColumnHidden(2, True)  # ID-Spalte ausblenden
         # Spaltenbreite an Hauptfenster anpassen
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        self.btnAddEntry = QPushButton()
+        self.btnAddEntry.setText("Eintrag hinzufügen")
+
+        self.btnDeleteEntry = QPushButton()
+        self.btnDeleteEntry.setText("Eintrag löschen")
+
+        self.btnAddList = QPushButton()
+        self.btnAddList.setText("Liste hinzufügen")
+
+        self.btnDeleteList = QPushButton()
+        self.btnDeleteList.setText("Liste löschen")
+
 
     def createLayout(self):
         self.layMain = QVBoxLayout()
@@ -76,8 +116,15 @@ class ChooseParameters_gui(QMainWindow):
         self.layMain.addStretch()
         self.layMain.addWidget(self.frmTrenner1)
 
+        self.layMain.addWidget(self.btnAddEntry)
+        self.layMain.addWidget(self.btnDeleteEntry)
+
+        self.layMain.addWidget(self.frmTrenner1)
+        self.layMain.addWidget(self.frmTrenner1)
 
 
+        self.layMain.addWidget(self.btnAddList)
+        self.layMain.addWidget(self.btnDeleteList)
 
 
 if __name__ == "__main__":

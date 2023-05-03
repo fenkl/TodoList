@@ -1,7 +1,8 @@
 # Autor: Francisco Fenkl
-# Grundätzliche Funktion:
+# Grundätzliche Funktion: REST-API für die Verwaltung mehrerer Todo-Listen
 # Datum 1. Version: 26.04.2023
 
+# TODO: OpenApi Spezifikation anpassen
 
 import uuid
 import os

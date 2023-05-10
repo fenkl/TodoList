@@ -1,12 +1,23 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
+import sys
 import re
 import requests
 
 import json
 
 from guis import *
+
+if len(sys.argv) > 1:
+    if sys.argv[1] == "localhost":
+        base_url = "http://127.0.0.1:5000"
+    else:
+        print("Übergebenes Argument ist ungültig.\n\"python3 main.py localhost\" ausführen, wenn der Server auf dem "
+              "localhost läuft")
+        sys.exit(1)
+else:
+    base_url = "http://194.195.245.87:80"
 
 
 def validiere_eingabe(eingabe):
@@ -29,7 +40,6 @@ def erstelleEintrag(gui):
     if result == QDialog.Accepted:
         eintrag_name = validiere_eingabe(dialog.name_input.text())
         eintrag_beschreibung = validiere_eingabe(dialog.beschreibung_input.text())
-        print(eintrag_name, eintrag_beschreibung)
         todolist_id = get_selected_todolist_id(gui)
         try:
             headers = {
@@ -40,7 +50,7 @@ def erstelleEintrag(gui):
                 "beschreibung": eintrag_beschreibung
             }
             json_data = json.dumps(data)
-            response = requests.post(f"http://127.0.0.1:5000/todo-list/{todolist_id}/entry", data=json_data, headers=headers)
+            response = requests.post(f"{base_url}/todo-list/{todolist_id}/entry", data=json_data, headers=headers)
             if response.status_code == 200:
                 QMessageBox.about(gui, "Ereignis", f"{eintrag_name} angelegt!")
             else:
@@ -69,7 +79,7 @@ def erstelleListe(gui):
                 "name": list_name
             }
             json_data = json.dumps(data)
-            response = requests.post("http://127.0.0.1:5000/todo-list", data=json_data, headers=headers)
+            response = requests.post(f"{base_url}/todo-list", data=json_data, headers=headers)
             if response.status_code == 200:
                 QMessageBox.about(gui, "Ereignis", f"Liste \"{list_name}\"angelegt!")
             else:
@@ -86,7 +96,7 @@ def loescheListe(gui):
         QMessageBox.about(gui, "Fehler", "Keine Liste ausgewählt!")
         return
     try:
-        requests.delete(f"http://127.0.0.1:5000/todo-list/{todolist_id}")
+        requests.delete(f"{base_url}/todo-list/{todolist_id}")
     except requests.RequestException:
         QMessageBox.about(gui, "Fehler", "Verbindungsfehler")
     finally:
@@ -108,7 +118,7 @@ def loescheEintrag(gui):
     todolist_id = get_selected_todolist_id(gui)
 
     try:
-        requests.delete(f"http://127.0.0.1:5000/todo-list/{todolist_id}/entry/{eintrag_id}")
+        requests.delete(f"{base_url}/todo-list/{todolist_id}/entry/{eintrag_id}")
     except requests.RequestException:
         QMessageBox.about(gui, "Fehler", "Verbindungsfehler")
 
@@ -123,7 +133,7 @@ def get_selected_todolist_id(gui):
 def fuelleAuswahlBox(gui) -> dict:
     # Listen vom Server abrufen und in der Auswahlbox anzeigen
     try:
-        todolisten: dict = requests.get("http://127.0.0.1:5000/todo-list").json()
+        todolisten: dict = requests.get(f"{base_url}/todo-list").json()
     except requests.RequestException:
         QMessageBox.about(gui, "Fehler", "Verbindungsfehler")
         return {}
@@ -143,7 +153,7 @@ def fuelleEintraege(gui, todolisten: dict) -> list:
     for todoliste in todolisten:
         if todoliste["name"] == name_todoliste:
             try:
-                eintraege = requests.get(f"http://127.0.0.1:5000/todo-list/{todoliste['id']}").json()
+                eintraege = requests.get(f"{base_url}/todo-list/{todoliste['id']}").json()
             except requests.RequestException:
                 QMessageBox.about(gui, "Fehler", "Verbindungsfehler")
                 return []

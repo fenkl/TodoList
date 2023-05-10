@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info:
+  title: ToDo Listen API
+  description: REST-API zur Verwaltung mehrerer ToDo-Listen
+  contact:
+    email: franciscofenkl@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "0.1"
+servers:
+- url: http://127.0.0.1:5000
+paths:
+  /todo-list:
+    get:
+      summary: Alle ToDo Listen IDs abrufen
+      operationId: todo_list_get
+      responses:
+        "200":
+          description: Gibt eine Liste aller ToDo-Listen zurück
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    post:
+      summary: Eine neue ToDo-Liste erstellen
+      operationId: todo_list_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+        required: true
+      responses:
+        "200":
+          description: Die erstellte ToDo-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /todo-list/{list_id}:
+    get:
+      summary: Eine spezifische ToDo-Liste und ihre Einträge abrufen
+      operationId: todo_list_list_id_get
+      parameters:
+      - name: list_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Gibt die angefragte ToDo-Liste und ihre Einträge zurück
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoEntry'
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      summary: Eine spezifische ToDo-Liste löschen
+      operationId: todo_list_list_id_delete
+      parameters:
+      - name: list_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ToDo-Liste erfolgreich gelöscht
+        "404":
+          description: ToDo-Liste nicht gefunden
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /todo-list/{list_id}/entry:
+    post:
+      summary: Einen Eintrag zu einer spezifischen ToDo-Liste hinzufügen
+      operationId: todo_list_list_id_entry_post
+      parameters:
+      - name: list_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntry'
+        required: true
+      responses:
+        "200":
+          description: Der erstellte ToDo-Eintrag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /todo-list/{list_id}/entry/{entry_id}:
+    put:
+      summary: Ein spezifischer ToDo-Eintrag aktualisieren
+      operationId: todo_list_list_id_entry_entry_id_put
+      parameters:
+      - name: list_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entry_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntry'
+        required: true
+      responses:
+        "200":
+          description: Der aktualisierte ToDo-Eintrag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+    delete:
+      summary: Ein spezifischer ToDo-Eintrag löschen
+      operationId: todo_list_list_id_entry_entry_id_delete
+      parameters:
+      - name: list_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: entry_id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ToDo-Eintrag erfolgreich gelöscht
+        "404":
+          description: ToDo-Eintrag nicht gefunden
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    TodoList:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Die eindeutige ID der ToDo-Liste
+        name:
+          type: string
+          description: Der Name der ToDo-Liste
+      example:
+        name: name
+        id: id
+    TodoEntry:
+      required:
+      - beschreibung
+      - id
+      - list_id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          description: Die eindeutige ID des ToDo-Eintrags
+        name:
+          type: string
+          description: Der Name des ToDo-Eintrags
+        beschreibung:
+          type: string
+          description: Die Beschreibung des ToDo-Eintrags
+        list_id:
+          type: string
+          description: "Die ID der ToDo-Liste, zu der der Eintrag gehört"
+      example:
+        list_id: list_id
+        name: name
+        id: id
+        beschreibung: beschreibung
+

@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: ToDo Listen API
+  description: REST-API zur Verwaltung mehrerer ToDo-Listen
+  contact:
+    email: franciscofenkl@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: '0.1'
+servers:
+  - url: http://127.0.0.1:5000
+paths:
+  /todo-list:
+    get:
+      summary: Alle ToDo Listen IDs abrufen
+      responses:
+        '200':
+          description: Gibt eine Liste aller ToDo-Listen zurück
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoList'
+    post:
+      summary: Eine neue ToDo-Liste erstellen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoList'
+      responses:
+        '200':
+          description: Die erstellte ToDo-Liste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+  /todo-list/{list_id}:
+    get:
+      summary: Eine spezifische ToDo-Liste und ihre Einträge abrufen
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Gibt die angefragte ToDo-Liste und ihre Einträge zurück
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoEntry'
+    delete:
+      summary: Eine spezifische ToDo-Liste löschen
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ToDo-Liste erfolgreich gelöscht
+        '404':
+          description: ToDo-Liste nicht gefunden
+  /todo-list/{list_id}/entry:
+    post:
+      summary: Einen Eintrag zu einer spezifischen ToDo-Liste hinzufügen
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntry'
+      responses:
+        '200':
+          description: Der erstellte ToDo-Eintrag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+  /todo-list/{list_id}/entry/{entry_id}:
+    put:
+      summary: Ein spezifischer ToDo-Eintrag aktualisieren
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: entry_id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoEntry'
+      responses:
+        '200':
+          description: Der aktualisierte ToDo-Eintrag
+          content:
+            application/json:
+              schema:
+               
+                $ref: '#/components/schemas/TodoEntry'
+    delete:
+      summary: Ein spezifischer ToDo-Eintrag löschen
+      parameters:
+      - in: path
+        name: list_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: entry_id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ToDo-Eintrag erfolgreich gelöscht
+        '404':
+          description: ToDo-Eintrag nicht gefunden
+components:
+  schemas:
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Die eindeutige ID der ToDo-Liste
+        name:
+          type: string
+          description: Der Name der ToDo-Liste
+      required:
+      - id
+      - name
+    TodoEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Die eindeutige ID des ToDo-Eintrags
+        name:
+          type: string
+          description: Der Name des ToDo-Eintrags
+        beschreibung:
+          type: string
+          description: Die Beschreibung des ToDo-Eintrags
+        list_id:
+          type: string
+          description: Die ID der ToDo-Liste, zu der der Eintrag gehört
+      required:
+      - id
+      - name
+      - beschreibung
+      - list_id

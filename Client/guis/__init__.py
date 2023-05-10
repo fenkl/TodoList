@@ -9,33 +9,56 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 
-class ErstelleTodoListe(QDialog):
-    def __init__(self, parent=None):
-        super(ErstelleTodoListe, self).__init__(parent)
-        self.setWindowTitle("Neue Liste erstellen")
-
+class ErstelleNeu(QDialog):
+    def __init__(self, typ: str, parent=None):
+        super(ErstelleNeu, self).__init__(parent)
+        self.typ = typ
+        if self.typ == "Liste":
+            self.setWindowTitle("Neue Liste erstellen")
+        elif self.typ == "Eintrag":
+            self.setWindowTitle("Neuen Eintrag erstellen")
         self.setup_ui()
 
     def setup_ui(self):
         layout = QVBoxLayout()
+        if self.typ == "Liste":
+            self.name_label = QLabel("Name der Liste:")
+            self.name_input = QLineEdit()
 
-        self.name_label = QLabel("Name der Liste:")
-        self.name_input = QLineEdit()
+            self.create_button = QPushButton("Erstellen")
+            self.create_button.clicked.connect(self.accept)
+            self.cancel_button = QPushButton("Abbrechen")
+            self.cancel_button.clicked.connect(self.reject)
 
-        self.create_button = QPushButton("Erstellen")
-        self.create_button.clicked.connect(self.accept)
-        self.cancel_button = QPushButton("Abbrechen")
-        self.cancel_button.clicked.connect(self.reject)
+            layout.addWidget(self.name_label)
+            layout.addWidget(self.name_input)
+            layout.addWidget(self.create_button)
+            layout.addWidget(self.cancel_button)
 
-        layout.addWidget(self.name_label)
-        layout.addWidget(self.name_input)
-        layout.addWidget(self.create_button)
-        layout.addWidget(self.cancel_button)
+        elif self.typ == "Eintrag":
+            self.name_label = QLabel("Name des Eintrages:")
+            self.name_input = QLineEdit()
+
+            self.beschreibung_label = QLabel("Beschreibung:")
+            self.beschreibung_input = QLineEdit()
+
+            self.create_button = QPushButton("Erstellen")
+            self.create_button.clicked.connect(self.accept)
+            self.cancel_button = QPushButton("Abbrechen")
+            self.cancel_button.clicked.connect(self.reject)
+
+            layout.addWidget(self.name_label)
+            layout.addWidget(self.name_input)
+            layout.addWidget(self.beschreibung_label)
+            layout.addWidget(self.beschreibung_input)
+            layout.addWidget(self.create_button)
+            layout.addWidget(self.cancel_button)
+
 
         self.setLayout(layout)
 
 
-class ChooseParameters_gui(QMainWindow):
+class TodoList_gui(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
         self.setWindowTitle("Verwalter Todo-Listen")
@@ -76,6 +99,7 @@ class ChooseParameters_gui(QMainWindow):
         # Spaltenbreite an Hauptfenster anpassen
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
+
         self.btnAddEntry = QPushButton()
         self.btnAddEntry.setText("Eintrag hinzufügen")
 
@@ -87,6 +111,9 @@ class ChooseParameters_gui(QMainWindow):
 
         self.btnDeleteList = QPushButton()
         self.btnDeleteList.setText("Liste löschen")
+
+        self.btnRefresh = QPushButton()
+        self.btnRefresh.setText("Aktualisieren")
 
 
     def createLayout(self):
@@ -112,7 +139,7 @@ class ChooseParameters_gui(QMainWindow):
 
         # TableView zum Layout hinzufügen
         self.layMain.addWidget(self.tableView)
-
+        self.layMain.setStretchFactor(self.tableView, 1)
         self.layMain.addStretch()
         self.layMain.addWidget(self.frmTrenner1)
 
@@ -126,6 +153,10 @@ class ChooseParameters_gui(QMainWindow):
         self.layMain.addWidget(self.btnAddList)
         self.layMain.addWidget(self.btnDeleteList)
 
+        self.layMain.addWidget(self.frmTrenner1)
+        self.layMain.addWidget(self.frmTrenner1)
+
+        self.layMain.addWidget(self.btnRefresh)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -133,7 +164,7 @@ if __name__ == "__main__":
 
     app.setStyleSheet("QWidget {font-size: 18px;}, QHBoxLayout {background-color:#0f3470;},"
                       " QPlainTextEdit {background-color: white;}")
-    choose = ChooseParameters_gui()
+    choose = TodoList_gui()
     #choose.show()
     try:
         sys.exit(app.exec())

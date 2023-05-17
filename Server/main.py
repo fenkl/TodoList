@@ -2,7 +2,6 @@
 # Grundätzliche Funktion: REST-API für die Verwaltung mehrerer Todo-Listen
 # Datum 1. Version: 26.04.2023
 
-# TODO: OpenApi Spezifikation anpassen
 
 import uuid
 import os
@@ -88,7 +87,7 @@ def add_entry(list_id):
     """
     Der User kann mit Angabe der entsprechenden list_id einen Eintrag zu einer To-do-Liste hinzufügen
     :param list_id
-    :return: Neuen Eintrag mit Details, bei Fehler 404
+    :return: neuen Eintrag mit Details, bei Fehler 404
     """
     todo_list = TodoList.query.get(list_id)
     if todo_list is None:

@@ -1,13 +1,12 @@
 # Autor: Francisco Fenkl
 # Grundätzliche Funktion: REST-API für die Verwaltung mehrerer Todo-Listen
 # Datum 1. Version: 26.04.2023
+# angepasst für Merles Todoliste am 13.01.2024
 
-# TODO: OpenApi Spezifikation anpassen
 
-import uuid
 import os
 from database import db
-from models import TodoList, TodoEntry
+from models import TodoEntry
 
 from flask import Flask, request, jsonify, abort
 
@@ -28,74 +27,27 @@ with app.app_context():
 
 
 @app.route("/todo-list", methods=["GET"])
-def get_list_ids():
-    """
-    Der User kann sich alle To-do-List-Ids holen
-    :return:
-    """
-    todo_lists = TodoList.query.all()
-    result = [item.as_dict() for item in todo_lists]
-    return jsonify(result)
-
-
-@app.route("/todo-list/<list_id>", methods=["GET"])
-def get_todo_list(list_id):
+def get_todo_list():
     """
     Der User kann sich eine To-do-Liste mit ihren Einträgen ansehen
     :param list_id
     :return: Einträge der To-do-Liste mit allen Details, bei Fehler 404
     """
-    todo_list = TodoList.query.get(list_id)
-    if todo_list is None:
-        abort(404, "Todoliste nicht gefunden")
-    entries = TodoEntry.query.filter_by(list_id=list_id).all()
+    entries = TodoEntry.query.all()
     return jsonify([entry.as_dict() for entry in entries])
 
 
-@app.route("/todo-list/<list_id>", methods=["DELETE"])
-def delete_todo_list(list_id):
-    """
-    Der User kann To-do-Listen anhand der entsprechenden list-id löschen
-    :param list_id
-    :return: 200, bei Fehler 404
-    """
-    todo_list = TodoList.query.get(list_id)
-    if todo_list is None:
-        abort(404, "Todoliste nicht gefunden")
-    entries = TodoEntry.query.filter_by(list_id=list_id).all()
-    for entry in entries:
-        db.session.delete(entry)
-    db.session.delete(todo_list)
-    db.session.commit()
-    return "", 200
-
-
-@app.route("/todo-list", methods=["POST"])
-def create_todo_list():
-    """
-    Der User kann eine To-do-Liste anlegen
-    :return:
-    """
-    data = request.get_json()
-    new_list = TodoList(id=str(uuid.uuid4()), name=data["name"])
-    db.session.add(new_list)
-    db.session.commit()
-    return jsonify(new_list.as_dict()), 200
-
-
-@app.route("/todo-list/<list_id>/entry", methods=["POST"])
-def add_entry(list_id):
+@app.route("/todo-list/entry", methods=["POST"])
+def add_entry():
     """
     Der User kann mit Angabe der entsprechenden list_id einen Eintrag zu einer To-do-Liste hinzufügen
     :param list_id
     :return: Neuen Eintrag mit Details, bei Fehler 404
     """
-    todo_list = TodoList.query.get(list_id)
-    if todo_list is None:
-        abort(404, "Todoliste nicht gefunden")
+
     data = request.get_json()
     try:
-        new_entry = TodoEntry(id=str(uuid.uuid4()), name=data['name'], beschreibung=data['beschreibung'], list_id=list_id)
+        new_entry = TodoEntry(text=data['text'])
     except Exception as e:
         abort(404, f"Fehler bei Anlegen: {e}")
         return
@@ -104,10 +56,10 @@ def add_entry(list_id):
     return jsonify(new_entry.as_dict()), 200
 
 
-@app.route("/todo-list/<list_id>/entry/<entry_id>", methods=["PUT"])
-def update_entry(list_id, entry_id):
+@app.route("/todo-list/entry/<entry_id>", methods=["PUT"])
+def update_entry(entry_id):
     entry = TodoEntry.query.get(entry_id)
-    if entry is None or entry.list_id != list_id:
+    if entry is None:
         abort(404, "Eintrag nicht gefunden")
     data = request.get_json()
     entry.name = data["name"]
@@ -116,10 +68,10 @@ def update_entry(list_id, entry_id):
     return jsonify(entry.as_dict()), 200
 
 
-@app.route("/todo-list/<list_id>/entry/<entry_id>", methods=["DELETE"])
-def delete_entry(list_id, entry_id):
+@app.route("/todo-list/entry/<entry_id>", methods=["DELETE"])
+def delete_entry(entry_id):
     entry = TodoEntry.query.get(entry_id)
-    if entry is None or entry.list_id != list_id:
+    if entry is None:
         abort(404)
     db.session.delete(entry)
     db.session.commit()

@@ -42,7 +42,7 @@ def add_entry():
     """
     Der User kann mit Angabe der entsprechenden list_id einen Eintrag zu einer To-do-Liste hinzufügen
     :param list_id
-    :return: Neuen Eintrag mit Details, bei Fehler 404
+    :return: neuen Eintrag mit Details, bei Fehler 404
     """
 
     data = request.get_json()

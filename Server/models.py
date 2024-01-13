@@ -6,15 +6,15 @@
 from database import db
 
 
-class TodoEntry(db.Model):
+class todoliste(db.Model):
     """
     Speicherung und Verwaltung aller To-do-Listeneinträge mit dem Verweis auf ihre To-do-Liste
     """
     id = db.Column(db.String, primary_key=True)
-    text = db.Column(db.String)
+    task = db.Column(db.String)
 
     def as_dict(self):
         return {
             "id": self.id,
-            "text": self.text
+            "text": self.task
         }

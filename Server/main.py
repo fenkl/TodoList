@@ -6,7 +6,7 @@
 
 import os
 from database import db
-from models import TodoEntry
+from models import todoliste
 
 from flask import Flask, request, jsonify, abort
 
@@ -33,7 +33,7 @@ def get_todo_list():
     :param list_id
     :return: Einträge der To-do-Liste mit allen Details, bei Fehler 404
     """
-    entries = TodoEntry.query.all()
+    entries = todoliste.query.all()
     return jsonify([entry.as_dict() for entry in entries])
 
 
@@ -47,7 +47,7 @@ def add_entry():
 
     data = request.get_json()
     try:
-        new_entry = TodoEntry(id=data["id"],text=data['eintrag'])
+        new_entry = todoliste(id=data["id"], text=data['eintrag'])
     except Exception as e:
         abort(404, f"Fehler bei Anlegen: {e}")
         return
@@ -58,7 +58,7 @@ def add_entry():
 
 @app.route("/todo-list/entry/<entry_id>", methods=["PUT"])
 def update_entry(entry_id):
-    entry = TodoEntry.query.get(entry_id)
+    entry = todoliste.query.get(entry_id)
     if entry is None:
         abort(404, "Eintrag nicht gefunden")
     data = request.get_json()
@@ -70,7 +70,7 @@ def update_entry(entry_id):
 
 @app.route("/todo-list/entry/<entry_id>", methods=["DELETE"])
 def delete_entry(entry_id):
-    entry = TodoEntry.query.get(entry_id)
+    entry = todoliste.query.get(entry_id)
     if entry is None:
         abort(404)
     db.session.delete(entry)
@@ -81,7 +81,7 @@ def delete_entry(entry_id):
 @app.route("/todo-list", methods=["DELETE"])
 def delete_list():
     # alles löschen
-    entries = TodoEntry.query.all()
+    entries = todoliste.query.all()
     for entry in entries:
         db.session.delete(entry)
     db.session.commit()

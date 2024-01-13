@@ -47,7 +47,7 @@ def add_entry():
 
     data = request.get_json()
     try:
-        new_entry = TodoEntry(text=data['text'])
+        new_entry = TodoEntry(id=data["id"],text=data['eintrag'])
     except Exception as e:
         abort(404, f"Fehler bei Anlegen: {e}")
         return
@@ -74,6 +74,16 @@ def delete_entry(entry_id):
     if entry is None:
         abort(404)
     db.session.delete(entry)
+    db.session.commit()
+    return "", 200
+
+
+@app.route("/todo-list", methods=["DELETE"])
+def delete_list():
+    # alles löschen
+    entries = TodoEntry.query.all()
+    for entry in entries:
+        db.session.delete(entry)
     db.session.commit()
     return "", 200
 

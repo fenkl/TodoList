@@ -15,5 +15,6 @@ class TodoEntry(db.Model):
 
     def as_dict(self):
         return {
+            "id": self.id,
             "text": self.text
         }

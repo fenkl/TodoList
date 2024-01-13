@@ -10,7 +10,7 @@ class todoliste(db.Model):
     """
     Speicherung und Verwaltung aller To-do-Listeneinträge mit dem Verweis auf ihre To-do-Liste
     """
-    id = db.Column(db.String, primary_key=True)
+    id = db.Column(db.String, primary_key=True, autoincrement=True)
     task = db.Column(db.String)
 
     def as_dict(self):

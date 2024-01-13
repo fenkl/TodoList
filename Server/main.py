@@ -47,7 +47,7 @@ def add_entry():
 
     data = request.get_json()
     try:
-        new_entry = todoliste(id=data["id"], text=data['eintrag'])
+        new_entry = todoliste(id=data["id"], task=data['eintrag'])
     except Exception as e:
         abort(404, f"Fehler bei Anlegen: {e}")
         return

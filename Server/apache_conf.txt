@@ -1,0 +1,11 @@
+─# cat /etc/apache2/sites-enabled/todolist.conf
+<VirtualHost *:80>
+    ServerName todolist
+    DocumentRoot /var/www/TodoList/Server
+    WSGIScriptAlias / /var/www/TodoList/Server/wsgi.py
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    <Directory /var/www/TodoList/Server>
+        Require all granted
+    </Directory>
+</VirtualHost>
